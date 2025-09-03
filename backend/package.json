@@ -1,0 +1,17 @@
+{
+  "name": "ai-trader-backend",
+  "version": "1.0.0",
+  "description": "Backend services for AI Trading Robot",
+  "main": "server/worker.js",
+  "scripts": {
+    "start": "node server/worker.js",
+    "dev": "nodemon server/worker.js"
+  },
+  "dependencies": {
+    "ws": "^8.18.0",
+    "fs": "^0.0.1-security"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}

@@ -1,38 +1,17 @@
 {
-  "name": "deriv-dbot-parity-sprint",
-  "private": true,
-  "version": "0.2.0",
-  "type": "module",
+  "name": "ai-trader",
+  "version": "1.0.0",
+  "description": "DBot-style AI Trading Robot with advanced analytics",
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint",
-    "worker": "node server/worker.js"
-  },
-  "dependencies": {
-    "@deriv/deriv-api": "^1.0.11",
-    "blockly": "^11.2.0",
-    "clsx": "^2.1.1",
-    "lucide-react": "^0.460.0",
-    "next": "14.2.5",
-    "react": "18.2.0",
-    "react-dom": "18.2.0",
-    "recharts": "^2.12.7",
-    "zod": "^3.23.8",
-    "zustand": "^4.5.4",
-    "ws": "^8.18.0"
+    "build": "npm install --prefix backend && npm install --prefix frontend && npm run build --prefix frontend && cp -r frontend/.next backend/.next",
+    "start": "npm start --prefix backend",
+    "dev": "concurrently \"npm run dev --prefix frontend\" \"npm run dev --prefix backend\"",
+    "install-all": "npm install && npm install --prefix backend && npm install --prefix frontend"
   },
   "devDependencies": {
-    "@types/node": "^20.14.10",
-    "@types/react": "^18.3.3",
-    "@types/react-dom": "^18.3.0",
-    "autoprefixer": "^10.4.20",
-    "eslint": "8.57.0",
-    "eslint-config-next": "14.2.5",
-    "postcss": "^8.4.41",
-    "tailwindcss": "^3.4.10",
-    "typescript": "^5.5.4",
-    "ts-node": "^10.9.2"
+    "concurrently": "^8.2.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }
