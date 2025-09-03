@@ -1,9 +1,9 @@
-{
+﻿{
   "name": "ai-trader",
   "version": "1.0.0",
   "description": "DBot-style AI Trading Robot with advanced analytics",
   "scripts": {
-    "build": "npm install --prefix backend && npm install --prefix frontend && npm run build --prefix frontend && cp -r frontend/.next backend/.next",
+    "build": "npm install --prefix backend && npm install --prefix frontend && npm run build --prefix frontend && mkdir -p backend/.next && cp -r frontend/.next/* backend/.next/ 2>/dev/null || true",
     "start": "npm start --prefix backend",
     "dev": "concurrently \"npm run dev --prefix frontend\" \"npm run dev --prefix backend\"",
     "install-all": "npm install && npm install --prefix backend && npm install --prefix frontend"
