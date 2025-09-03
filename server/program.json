@@ -1,0 +1,12 @@
+{
+  "symbol": "R_100",
+  "amount": 1,
+  "basis": "stake",
+  "duration": 3,
+  "unit": "m",
+  "direction": "CALL",
+  "cooldown_sec": 30,
+  "trades": 3,
+  "app_id": 1089,
+  "token": "PASTE_YOUR_TOKEN"
+}
