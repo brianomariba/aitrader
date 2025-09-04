@@ -6,6 +6,7 @@ import { MonteCarloSimulator, BacktestingEngine, HistoricalDataPoint, TradeSigna
 export function MonteCarloSimulation() {
   const [isRunning, setIsRunning] = useState(false)
   const [results, setResults] = useState<any>(null)
+  const [error, setError] = useState<string | null>(null)
   const [numSimulations, setNumSimulations] = useState(1000)
 
   const runMonteCarlo = async () => {
@@ -73,7 +74,7 @@ export function MonteCarloSimulation() {
       const analysis = simulator.analyzeResults(simulationResults)
       setResults({ results: simulationResults, analysis })
     } catch (error) {
-      console.error('Monte Carlo simulation failed:', error)
+      setError(error instanceof Error ? error.message : 'Monte Carlo simulation failed. Please try again.')
     } finally {
       setIsRunning(false)
     }
@@ -135,6 +136,21 @@ export function MonteCarloSimulation() {
           {isRunning ? 'Running Simulations...' : `Run ${numSimulations} Simulations`}
         </button>
       </div>
+
+      {error && (
+        <div className="mt-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg">
+          <div className="flex items-center gap-2 text-red-400 text-sm">
+            <span>⚠️</span>
+            <span>{error}</span>
+          </div>
+          <button
+            className="mt-2 text-xs text-red-300 hover:text-red-200 underline"
+            onClick={() => setError(null)}
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
 
       {/* Results */}
       {results && (

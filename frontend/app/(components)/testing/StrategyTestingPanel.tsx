@@ -17,6 +17,7 @@ import { BacktestingEngine, BacktestResult, BacktestConfig } from '@/lib/backtes
 export function StrategyTestingPanel() {
   const [isRunning, setIsRunning] = useState(false)
   const [results, setResults] = useState<BacktestResult | null>(null)
+  const [error, setError] = useState<string | null>(null)
   const [config, setConfig] = useState<BacktestConfig>({
     initialBalance: 1000,
     commission: 0.01,
@@ -69,7 +70,7 @@ export function StrategyTestingPanel() {
       const result = engine.executeBacktest(signals)
       setResults(result)
     } catch (error) {
-      console.error('Backtest failed:', error)
+      setError(error instanceof Error ? error.message : 'Backtest failed. Please check your configuration.')
     } finally {
       setIsRunning(false)
     }
@@ -184,6 +185,21 @@ export function StrategyTestingPanel() {
             Export Results
           </button>
         </div>
+
+        {error && (
+          <div className="mt-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg">
+            <div className="flex items-center gap-2 text-red-400 text-sm">
+              <span>⚠️</span>
+              <span>{error}</span>
+            </div>
+            <button
+              className="mt-2 text-xs text-red-300 hover:text-red-200 underline"
+              onClick={() => setError(null)}
+            >
+              Dismiss
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Results Panel */}
