@@ -12,34 +12,34 @@ import {
 } from 'lucide-react'
 
 export function DBotPanel() {
-  const { bot, botStats, account, riskStats, log } = useDerivStore()
+  const store = useDerivStore()
 
-  const recentLogs = log.slice(-5).reverse()
+  const recentLogs = store.log.slice(-5).reverse()
 
   const stats = [
     {
       label: 'Total Trades',
-      value: botStats.trades.toString(),
+      value: store.botStats.trades.toString(),
       icon: Target,
       color: 'text-blue-400'
     },
     {
       label: 'Win Rate',
-      value: botStats.trades > 0 ? `${Math.round((botStats.wins / botStats.trades) * 100)}%` : '0%',
+      value: store.botStats.trades > 0 ? `${Math.round((store.botStats.wins / store.botStats.trades) * 100)}%` : '0%',
       icon: TrendingUp,
       color: 'text-green-400'
     },
     {
       label: 'Daily P&L',
-      value: `$${riskStats.dailyPnL.toFixed(2)}`,
+      value: `$${store.riskStats.dailyPnL.toFixed(2)}`,
       icon: DollarSign,
-      color: riskStats.dailyPnL >= 0 ? 'text-green-400' : 'text-red-400'
+      color: store.riskStats.dailyPnL >= 0 ? 'text-green-400' : 'text-red-400'
     },
     {
       label: 'Consecutive Losses',
-      value: riskStats.consecutiveLosses.toString(),
+      value: store.riskStats.consecutiveLosses.toString(),
       icon: TrendingDown,
-      color: riskStats.consecutiveLosses > 0 ? 'text-red-400' : 'text-gray-400'
+      color: store.riskStats.consecutiveLosses > 0 ? 'text-red-400' : 'text-gray-400'
     }
   ]
 
@@ -74,26 +74,26 @@ export function DBotPanel() {
           <div className="flex items-center justify-between mb-3">
             <span className="text-sm text-gray-300">Status</span>
             <div className="flex items-center">
-              <div className={`w-2 h-2 rounded-full mr-2 ${bot.enabled ? 'bg-green-500' : 'bg-gray-500'}`} />
-              <span className={`text-sm font-medium ${bot.enabled ? 'text-green-400' : 'text-gray-400'}`}>
-                {bot.enabled ? 'Running' : 'Stopped'}
+              <div className={`w-2 h-2 rounded-full mr-2 ${store.bot.enabled ? 'bg-green-500' : 'bg-gray-500'}`} />
+              <span className={`text-sm font-medium ${store.bot.enabled ? 'text-green-400' : 'text-gray-400'}`}>
+                {store.bot.enabled ? 'Running' : 'Stopped'}
               </span>
             </div>
           </div>
 
-          {bot.enabled && (
+          {store.bot.enabled && (
             <>
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm text-gray-300">Symbol</span>
-                <span className="text-sm font-medium text-white">{bot.symbol || 'N/A'}</span>
+                <span className="text-sm font-medium text-white">{store.bot.symbol || 'N/A'}</span>
               </div>
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm text-gray-300">Amount</span>
-                <span className="text-sm font-medium text-white">{bot.amount} {bot.currency}</span>
+                <span className="text-sm font-medium text-white">{store.bot.amount} {store.bot.currency}</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm text-gray-300">Duration</span>
-                <span className="text-sm font-medium text-white">{bot.duration}{bot.duration_unit}</span>
+                <span className="text-sm font-medium text-white">{store.bot.duration}{store.bot.duration_unit}</span>
               </div>
             </>
           )}
@@ -110,26 +110,26 @@ export function DBotPanel() {
             <div className="flex items-center justify-between">
               <span className="text-sm text-gray-300">Risk Level</span>
               <span className={`text-sm font-medium ${
-                riskStats.consecutiveLosses >= 3 ? 'text-red-400' :
-                riskStats.dailyTrades >= 5 ? 'text-yellow-400' : 'text-green-400'
+                store.riskStats.consecutiveLosses >= 3 ? 'text-red-400' :
+                store.riskStats.dailyTrades >= 5 ? 'text-yellow-400' : 'text-green-400'
               }`}>
-                {riskStats.consecutiveLosses >= 3 ? 'High' :
-                 riskStats.dailyTrades >= 5 ? 'Medium' : 'Low'}
+                {store.riskStats.consecutiveLosses >= 3 ? 'High' :
+                 store.riskStats.dailyTrades >= 5 ? 'Medium' : 'Low'}
               </span>
             </div>
 
             <div className="flex items-center justify-between">
               <span className="text-sm text-gray-300">Daily Limit</span>
               <span className="text-sm font-medium text-white">
-                {riskStats.dailyTrades} / 10
+                {store.riskStats.dailyTrades} / 10
               </span>
             </div>
 
-            {account && (
+            {store.account && (
               <div className="flex items-center justify-between">
                 <span className="text-sm text-gray-300">Balance</span>
                 <span className="text-sm font-medium profit-positive">
-                  ${account.balance?.toFixed(2)}
+                  ${store.account.balance?.toFixed(2)}
                 </span>
               </div>
             )}
