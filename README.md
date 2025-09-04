@@ -103,26 +103,42 @@ NODE_ENV=development
 
 ### Render.com Deployment
 
-1. **Connect your GitHub repository** to Render
-2. **Set build command**:
+1. **Create a Web Service** (not Background Worker) in Render
+2. **Connect your GitHub repository** to Render
+3. **Set build command**:
    ```bash
-   npm install --prefix backend && npm install --prefix frontend && npm run build --prefix frontend && cp -r frontend/.next backend/.next
+   npm run build
    ```
-3. **Set start command**:
+4. **Set start command**:
    ```bash
-   npm start --prefix backend
+   npm start
    ```
 
 ### Environment Variables on Render
 
 Add these environment variables in your Render dashboard:
 
+**Required:**
+- `PORT=5000` (Render sets this automatically, but you can specify)
+- `NODE_ENV=production`
+
+**Optional Trading Configuration:**
+- `DERIV_APP_ID=your_app_id_here` (for automated trading)
+- `DERIV_TOKEN=your_token_here` (for automated trading)
+- `TRADING_SYMBOL=R_100` (default trading symbol)
+- `TRADING_AMOUNT=1` (default stake amount)
+- `TRADING_DIRECTION=CALL` (default contract type)
+- `TRADING_DURATION=3` (default duration)
+- `TRADING_UNIT=m` (default duration unit)
+- `TRADING_TRADES=5` (number of automated trades)
+- `TRADING_COOLDOWN=30` (seconds between trades)
+
+**Frontend Configuration:**
 - `NEXT_PUBLIC_DERIV_APP_ID=96690`
 - `NEXT_PUBLIC_DERIV_API_URL=wss://ws.derivws.com/websockets/v3`
 - `NEXT_PUBLIC_DERIV_OAUTH_URL=https://oauth.deriv.com/oauth2/authorize`
 - `NEXT_PUBLIC_REDIRECT_PATH=/oauth`
 - `NEXT_PUBLIC_ENFORCE_OAUTH=0`
-- `NODE_ENV=production`
 
 ##  Available Scripts
 
