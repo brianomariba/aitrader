@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { Dice6, TrendingUp, TrendingDown, AlertTriangle, Target } from 'lucide-react'
-import { MonteCarloSimulator } from '@/lib/backtesting'
+import { MonteCarloSimulator, BacktestingEngine, HistoricalDataPoint, TradeSignal } from '@/lib/backtesting'
 
 export function MonteCarloSimulation() {
   const [isRunning, setIsRunning] = useState(false)
@@ -31,23 +31,23 @@ export function MonteCarloSimulation() {
       const simulator = new MonteCarloSimulator(engine)
 
       // Define strategy with random parameters
-      const strategyFunction = (data: any[], index: number, params: any) => {
+      const strategyFunction = (data: HistoricalDataPoint[], index: number, params: Record<string, any>): TradeSignal | null => {
         if (index < params.period) return null
 
-        const recentPrices = data.slice(index - params.period, index + 1).map((d: any) => d.close)
+        const recentPrices = data.slice(index - params.period, index + 1).map((d: HistoricalDataPoint) => d.close)
         const avgPrice = recentPrices.reduce((sum: number, p: number) => sum + p, 0) / recentPrices.length
         const currentPrice = data[index].close
 
         if (currentPrice > avgPrice * (1 + params.threshold)) {
           return {
             timestamp: data[index].timestamp,
-            type: 'BUY',
+            type: 'BUY' as const,
             price: currentPrice
           }
         } else if (currentPrice < avgPrice * (1 - params.threshold)) {
           return {
             timestamp: data[index].timestamp,
-            type: 'SELL',
+            type: 'SELL' as const,
             price: currentPrice
           }
         }
@@ -303,7 +303,7 @@ export function MonteCarloSimulation() {
 }
 
 // Helper function to generate sample data
-function generateSampleHistoricalData(days: number) {
+function generateSampleHistoricalData(days: number): HistoricalDataPoint[] {
   const data = []
   const now = Date.now()
   let price = 100
@@ -329,45 +329,4 @@ function generateSampleHistoricalData(days: number) {
   }
 
   return data
-}
-
-// Import required classes (these would be in the actual implementation)
-class BacktestingEngine {
-  constructor(config: any) {
-    // Implementation would be in the actual file
-  }
-
-  loadHistoricalData(data: any[]) {
-    // Implementation would be in the actual file
-  }
-
-  generateSignals(strategy: any) {
-    // Implementation would be in the actual file
-    return []
-  }
-
-  executeBacktest(signals: any[]) {
-    // Implementation would be in the actual file
-    return {
-      totalTrades: 0,
-      winningTrades: 0,
-      losingTrades: 0,
-      winRate: 0,
-      totalPnL: 0,
-      totalReturn: 0,
-      maxDrawdown: 0,
-      sharpeRatio: 0,
-      profitFactor: 0,
-      averageWin: 0,
-      averageLoss: 0,
-      largestWin: 0,
-      largestLoss: 0,
-      averageHoldingPeriod: 0,
-      maxHoldingPeriod: 0,
-      trades: [],
-      equityCurve: [],
-      drawdownCurve: [],
-      monthlyReturns: []
-    }
-  }
 }

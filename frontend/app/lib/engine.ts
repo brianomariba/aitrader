@@ -1,5 +1,8 @@
 import { useDerivStore } from '@/state/derivStore'
 import type { Program, DurationUnit } from './ir'
+
+// Re-export Program type for use in other modules
+export type { Program }
 import { validateContractParams } from './derivClient'
 import {
   calculateSMA,
@@ -34,7 +37,8 @@ export async function runProgram(program: Program) {
   store.subscribeTicks(symbol)
   let trades = 0, cooling = false
 
-  const unsubscribe = useDerivStore.subscribe((s) => s.lastTicks, async (ticks) => {
+  const unsubscribe = useDerivStore.subscribe(async (s) => {
+    const ticks = s.lastTicks
     if (cooling || trades >= stopAfter) return
     const slice = lastN(ticks, 6); if (slice.length < 6) return
     let up=0, down=0; for(let i=1;i<slice.length;i++){ if(slice[i].v>slice[i-1].v) up++; if(slice[i].v<slice[i-1].v) down++ }

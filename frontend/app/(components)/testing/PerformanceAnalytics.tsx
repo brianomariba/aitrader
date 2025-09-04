@@ -24,38 +24,38 @@ export function PerformanceAnalytics({ results }: PerformanceAnalyticsProps) {
 
   // Get the best performing result
   const bestResult = results.reduce((best, current) =>
-    current.result.totalReturn > best.result.totalReturn ? current : best
+    current.totalReturn > best.totalReturn ? current : best
   )
 
   const metrics = [
     {
       label: 'Total Return',
-      value: `${bestResult.result.totalReturn.toFixed(2)}%`,
-      color: bestResult.result.totalReturn >= 0 ? 'text-green-400' : 'text-red-400',
+      value: `${bestResult.totalReturn.toFixed(2)}%`,
+      color: bestResult.totalReturn >= 0 ? 'text-green-400' : 'text-red-400',
       icon: TrendingUp
     },
     {
       label: 'Win Rate',
-      value: `${bestResult.result.winRate.toFixed(1)}%`,
+      value: `${bestResult.winRate.toFixed(1)}%`,
       color: 'text-blue-400',
       icon: Target
     },
     {
       label: 'Sharpe Ratio',
-      value: bestResult.result.sharpeRatio.toFixed(2),
-      color: bestResult.result.sharpeRatio >= 1 ? 'text-green-400' : 'text-yellow-400',
+      value: bestResult.sharpeRatio.toFixed(2),
+      color: bestResult.sharpeRatio >= 1 ? 'text-green-400' : 'text-yellow-400',
       icon: BarChart3
     },
     {
       label: 'Max Drawdown',
-      value: `${bestResult.result.maxDrawdown.toFixed(2)}%`,
-      color: bestResult.result.maxDrawdown <= 20 ? 'text-green-400' : 'text-red-400',
+      value: `${bestResult.maxDrawdown.toFixed(2)}%`,
+      color: bestResult.maxDrawdown <= 20 ? 'text-green-400' : 'text-red-400',
       icon: TrendingDown
     }
   ]
 
   const riskAssessment = () => {
-    const result = bestResult.result
+    const result = bestResult
     let score = 0
     let issues: string[] = []
 
@@ -154,31 +154,31 @@ export function PerformanceAnalytics({ results }: PerformanceAnalyticsProps) {
           <div className="space-y-3">
             <div className="flex justify-between">
               <span className="text-gray-400">Total Trades:</span>
-              <span className="text-white font-medium">{bestResult.result.totalTrades}</span>
+              <span className="text-white font-medium">{bestResult.totalTrades}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-400">Winning Trades:</span>
-              <span className="text-green-400 font-medium">{bestResult.result.winningTrades}</span>
+              <span className="text-green-400 font-medium">{bestResult.winningTrades}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-400">Losing Trades:</span>
-              <span className="text-red-400 font-medium">{bestResult.result.losingTrades}</span>
+              <span className="text-red-400 font-medium">{bestResult.losingTrades}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-400">Average Win:</span>
-              <span className="text-green-400 font-medium">${bestResult.result.averageWin.toFixed(2)}</span>
+              <span className="text-green-400 font-medium">${bestResult.averageWin.toFixed(2)}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-400">Average Loss:</span>
-              <span className="text-red-400 font-medium">${bestResult.result.averageLoss.toFixed(2)}</span>
+              <span className="text-red-400 font-medium">${bestResult.averageLoss.toFixed(2)}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-400">Largest Win:</span>
-              <span className="text-green-400 font-medium">${bestResult.result.largestWin.toFixed(2)}</span>
+              <span className="text-green-400 font-medium">${bestResult.largestWin.toFixed(2)}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-400">Largest Loss:</span>
-              <span className="text-red-400 font-medium">${bestResult.result.largestLoss.toFixed(2)}</span>
+              <span className="text-red-400 font-medium">${bestResult.largestLoss.toFixed(2)}</span>
             </div>
           </div>
         </div>
@@ -189,28 +189,28 @@ export function PerformanceAnalytics({ results }: PerformanceAnalyticsProps) {
           <div className="space-y-3">
             <div className="flex justify-between">
               <span className="text-gray-400">Profit Factor:</span>
-              <span className="text-blue-400 font-medium">{bestResult.result.profitFactor.toFixed(2)}</span>
+              <span className="text-blue-400 font-medium">{bestResult.profitFactor.toFixed(2)}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-400">Sharpe Ratio:</span>
-              <span className="text-green-400 font-medium">{bestResult.result.sharpeRatio.toFixed(2)}</span>
+              <span className="text-green-400 font-medium">{bestResult.sharpeRatio.toFixed(2)}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-400">Max Drawdown:</span>
-              <span className="text-red-400 font-medium">{bestResult.result.maxDrawdown.toFixed(2)}%</span>
+              <span className="text-red-400 font-medium">{bestResult.maxDrawdown.toFixed(2)}%</span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-400">Avg Holding Time:</span>
-              <span className="text-white font-medium">{Math.round(bestResult.result.averageHoldingPeriod / (1000 * 60))}m</span>
+              <span className="text-white font-medium">{Math.round(bestResult.averageHoldingPeriod / (1000 * 60))}m</span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-400">Max Holding Time:</span>
-              <span className="text-white font-medium">{Math.round(bestResult.result.maxHoldingPeriod / (1000 * 60))}m</span>
+              <span className="text-white font-medium">{Math.round(bestResult.maxHoldingPeriod / (1000 * 60))}m</span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-400">Recovery Factor:</span>
               <span className="text-blue-400 font-medium">
-                {bestResult.result.maxDrawdown > 0 ? (bestResult.result.totalPnL / (bestResult.result.maxDrawdown / 100 * 1000)).toFixed(2) : 'N/A'}
+                {bestResult.maxDrawdown > 0 ? (bestResult.totalPnL / (bestResult.maxDrawdown / 100 * 1000)).toFixed(2) : 'N/A'}
               </span>
             </div>
           </div>
@@ -218,11 +218,11 @@ export function PerformanceAnalytics({ results }: PerformanceAnalyticsProps) {
       </div>
 
       {/* Monthly Returns */}
-      {bestResult.result.monthlyReturns.length > 0 && (
+      {bestResult.monthlyReturns.length > 0 && (
         <div className="card">
           <h4 className="text-md font-medium text-white mb-3">Monthly Returns</h4>
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
-            {bestResult.result.monthlyReturns.slice(-6).map((month, index) => (
+            {bestResult.monthlyReturns.slice(-6).map((month, index) => (
               <div key={index} className="bg-gray-700 rounded-lg p-3 text-center">
                 <div className="text-sm text-gray-400 mb-1">{month.month}</div>
                 <div className={`text-lg font-bold ${month.return >= 0 ? 'text-green-400' : 'text-red-400'}`}>
@@ -248,19 +248,19 @@ export function PerformanceAnalytics({ results }: PerformanceAnalyticsProps) {
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-green-400">
-                {results.filter(r => r.result.totalReturn > 0).length}
+                {results.filter(r => r.totalReturn > 0).length}
               </div>
               <div className="text-sm text-gray-400">Profitable Strategies</div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-orange-400">
-                {results[0].score.toFixed(2)}
+                {results[0].sharpeRatio.toFixed(2)}
               </div>
-              <div className="text-sm text-gray-400">Best Score</div>
+              <div className="text-sm text-gray-400">Best Sharpe Ratio</div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-purple-400">
-                {((results.filter(r => r.result.totalReturn > 0).length / results.length) * 100).toFixed(0)}%
+                {((results.filter(r => r.totalReturn > 0).length / results.length) * 100).toFixed(0)}%
               </div>
               <div className="text-sm text-gray-400">Success Rate</div>
             </div>

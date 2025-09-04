@@ -174,7 +174,7 @@ export function AdvancedChart({ data, height = 400, showVolume = true, showGrid 
       ctx.fillText(`$${currentPrice.toFixed(5)}`, rect.width - 80, currentY - 5)
     }
 
-  }, [data, chartType, zoom, panOffset, height, showGrid])
+  }, [data, chartType, zoom, panOffset, height, showGrid, currentPrice, minPrice, priceRange])
 
   const handleZoomIn = () => setZoom(Math.min(zoom * 1.2, 5))
   const handleZoomOut = () => setZoom(Math.max(zoom / 1.2, 0.1))

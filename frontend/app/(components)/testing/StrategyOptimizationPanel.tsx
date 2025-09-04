@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { Zap, Settings, TrendingUp, Target, Cpu } from 'lucide-react'
-import { StrategyOptimizer, OptimizationResult } from '@/lib/backtesting'
+import { StrategyOptimizer, OptimizationResult, BacktestingEngine, HistoricalDataPoint, TradeSignal } from '@/lib/backtesting'
 
 export function StrategyOptimizationPanel() {
   const [isOptimizing, setIsOptimizing] = useState(false)
@@ -37,23 +37,23 @@ export function StrategyOptimizationPanel() {
       const optimizer = new StrategyOptimizer(engine)
 
       // Define strategy function with parameters
-      const strategyFunction = (data: any[], index: number, params: any) => {
+      const strategyFunction = (data: HistoricalDataPoint[], index: number, params: Record<string, any>): TradeSignal | null => {
         if (index < params.period) return null
 
-        const recentPrices = data.slice(index - params.period, index + 1).map((d: any) => d.close)
+        const recentPrices = data.slice(index - params.period, index + 1).map((d: HistoricalDataPoint) => d.close)
         const avgPrice = recentPrices.reduce((sum: number, p: number) => sum + p, 0) / recentPrices.length
         const currentPrice = data[index].close
 
         if (currentPrice > avgPrice * (1 + params.threshold)) {
           return {
             timestamp: data[index].timestamp,
-            type: 'BUY',
+            type: 'BUY' as const,
             price: currentPrice
           }
         } else if (currentPrice < avgPrice * (1 - params.threshold)) {
           return {
             timestamp: data[index].timestamp,
-            type: 'SELL',
+            type: 'SELL' as const,
             price: currentPrice
           }
         }
@@ -71,10 +71,17 @@ export function StrategyOptimizationPanel() {
 
       const fitnessFunc = fitnessMap[fitnessFunction]
 
+      // Convert parameter space to expected format
+      const convertedParameterSpace: Record<string, number[]> = {
+        period: Array.from({ length: Math.floor((parameterSpace.period.max - parameterSpace.period.min) / parameterSpace.period.step) + 1 }, (_, i) => parameterSpace.period.min + (i * parameterSpace.period.step)),
+        threshold: Array.from({ length: Math.floor((parameterSpace.threshold.max - parameterSpace.threshold.min) / parameterSpace.threshold.step) + 1 }, (_, i) => parameterSpace.threshold.min + (i * parameterSpace.threshold.step)),
+        stopLoss: Array.from({ length: Math.floor((parameterSpace.stopLoss.max - parameterSpace.stopLoss.min) / parameterSpace.stopLoss.step) + 1 }, (_, i) => parameterSpace.stopLoss.min + (i * parameterSpace.stopLoss.step))
+      }
+
       // Run optimization
       const optimizationResults = optimizer.optimizeParameters(
         strategyFunction,
-        parameterSpace,
+        convertedParameterSpace,
         historicalData,
         fitnessFunc
       )
@@ -376,45 +383,4 @@ function generateSampleHistoricalData(days: number) {
   }
 
   return data
-}
-
-// Import required classes
-class BacktestingEngine {
-  constructor(config: any) {
-    // Implementation would be in the actual file
-  }
-
-  loadHistoricalData(data: any[]) {
-    // Implementation would be in the actual file
-  }
-
-  generateSignals(strategy: any) {
-    // Implementation would be in the actual file
-    return []
-  }
-
-  executeBacktest(signals: any[]) {
-    // Implementation would be in the actual file
-    return {
-      totalTrades: 0,
-      winningTrades: 0,
-      losingTrades: 0,
-      winRate: 0,
-      totalPnL: 0,
-      totalReturn: 0,
-      maxDrawdown: 0,
-      sharpeRatio: 0,
-      profitFactor: 0,
-      averageWin: 0,
-      averageLoss: 0,
-      largestWin: 0,
-      largestLoss: 0,
-      averageHoldingPeriod: 0,
-      maxHoldingPeriod: 0,
-      trades: [],
-      equityCurve: [],
-      drawdownCurve: [],
-      monthlyReturns: []
-    }
-  }
 }

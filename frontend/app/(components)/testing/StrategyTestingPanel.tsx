@@ -302,7 +302,7 @@ export function StrategyTestingPanel() {
                 <p>1. Configure your backtest parameters above</p>
                 <p>2. Select a symbol and date range</p>
                 <p>3. Adjust commission and slippage settings</p>
-                <p>4. Click "Run Backtest" to analyze your strategy</p>
+                <p>4. Click &quot;Run Backtest&quot; to analyze your strategy</p>
                 <p>5. Review performance metrics and risk statistics</p>
               </div>
             </div>

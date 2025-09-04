@@ -12,20 +12,20 @@ import {
 } from 'lucide-react'
 
 export function DBotPanel() {
-  const { bot, account, riskStats, log } = useDerivStore()
+  const { bot, botStats, account, riskStats, log } = useDerivStore()
 
   const recentLogs = log.slice(-5).reverse()
 
   const stats = [
     {
       label: 'Total Trades',
-      value: bot.botStats.trades.toString(),
+      value: botStats.trades.toString(),
       icon: Target,
       color: 'text-blue-400'
     },
     {
       label: 'Win Rate',
-      value: bot.botStats.trades > 0 ? `${Math.round((bot.botStats.wins / bot.botStats.trades) * 100)}%` : '0%',
+      value: botStats.trades > 0 ? `${Math.round((botStats.wins / botStats.trades) * 100)}%` : '0%',
       icon: TrendingUp,
       color: 'text-green-400'
     },

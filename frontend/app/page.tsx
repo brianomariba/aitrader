@@ -49,7 +49,7 @@ export default function HomePage() {
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-orange-400">—</div>
-              <div className="text-sm text-gray-400">Today's P&L</div>
+              <div className="text-sm text-gray-400">Today&apos;s P&L</div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-purple-400">—</div>
