@@ -218,7 +218,7 @@ export default function BuilderPage() {
     <main className="container py-6">
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
         <section className="card lg:col-span-2">
-          <h2 className="mb-3 text-xl font-semibold">DBot‑style Builder</h2>
+          <h2 className="mb-3 text-xl font-semibold">Strategy Builder</h2>
           {error ? (
             <div className="flex items-center justify-center h-full text-center p-8">
               <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-6 max-w-md">

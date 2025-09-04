@@ -1,5 +1,6 @@
 'use client'
 import { useEffect } from 'react'
+import Image from 'next/image'
 import { ConnectionPanel } from './(components)/ui/ConnectionPanel'
 import { MarketPanel } from './(components)/ui/MarketPanel'
 import { TradePanel } from './(components)/ui/TradePanel'
@@ -12,6 +13,28 @@ export default function HomePage() {
 
   return (
     <main className="fade-in">
+      {/* Hero Section with Logo */}
+      <div className="mb-8 px-6">
+        <div className="card text-center py-12">
+          <div className="flex justify-center mb-6">
+            <Image
+              src="/logo.png"
+              alt="AI Trader Logo"
+              width={80}
+              height={80}
+              className="rounded-xl shadow-lg"
+            />
+          </div>
+          <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">
+            Welcome to AI Trader
+          </h1>
+          <p className="text-lg text-gray-300 max-w-2xl mx-auto">
+            Professional automated trading platform powered by Deriv API.
+            Build strategies visually, test thoroughly, and trade automatically with advanced risk management.
+          </p>
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 p-6">
         {/* Connection & Account Status */}
         <div className="card">

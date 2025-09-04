@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import Image from 'next/image'
 import { useDerivStore } from '@/state/derivStore'
 import {
   Play,
@@ -31,10 +32,14 @@ export function DBotHeader() {
       {/* Logo and Brand */}
       <div className="flex items-center gap-4">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-gradient-to-br from-orange-500 to-red-600 rounded-lg flex items-center justify-center">
-            <Zap className="w-5 h-5 text-white" />
-          </div>
-          <h1 className="text-xl font-bold">DBot</h1>
+          <Image
+            src="/logo.png"
+            alt="AI Trader Logo"
+            width={32}
+            height={32}
+            className="rounded-lg"
+          />
+          <h1 className="text-xl font-bold">AI Trader</h1>
         </div>
       </div>
 

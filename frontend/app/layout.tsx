@@ -4,7 +4,7 @@ import { DBotHeader } from './(components)/layout/DBotHeader'
 import { DBotSidebar } from './(components)/layout/DBotSidebar'
 import { DBotPanel } from './(components)/layout/DBotPanel'
 
-export const metadata = { title: 'DBot - Automated Trading Robot', description: 'Visual trading robot builder powered by Deriv API' }
+export const metadata = { title: 'AI Trader - Professional Automated Trading Platform', description: 'Build, test, and deploy automated trading strategies with advanced risk management powered by Deriv API' }
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
