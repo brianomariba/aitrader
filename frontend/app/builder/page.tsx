@@ -12,6 +12,8 @@ export default function BuilderPage() {
   const divRef = useRef<HTMLDivElement | null>(null)
   const wsRef = useRef<Blockly.WorkspaceSvg | null>(null)
   const [program, setProgram] = useState<Program>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const { symbols, fetchActiveSymbols } = useDerivStore()
 
   useEffect(() => { if (symbols.length === 0) fetchActiveSymbols() }, [symbols.length, fetchActiveSymbols])
@@ -19,7 +21,10 @@ export default function BuilderPage() {
   useEffect(() => {
     if (!divRef.current) return
 
-    Blockly.common.defineBlocksWithJsonArray([
+    try {
+      setIsLoading(true)
+      setError(null)
+      Blockly.common.defineBlocksWithJsonArray([
       // General Configuration
       {"type":"set_symbol","message0":"set symbol %1","args0":[{"type":"field_input","name":"SYMBOL","text":"R_100"}],"colour":210,"previousStatement":null,"nextStatement":null},
       {"type":"set_basis","message0":"basis %1","args0":[{"type":"field_dropdown","name":"BASIS","options":[["stake","stake"],["payout","payout"]]}],"colour":210,"previousStatement":null,"nextStatement":null},
@@ -171,16 +176,73 @@ export default function BuilderPage() {
       const text = Blockly.Xml.domToText(dom)
       localStorage.setItem(WORKSPACE_KEY, text)
       const code = `var PROGRAM=[];\n` + javascriptGenerator.workspaceToCode(ws) + `return PROGRAM;`
-      try { const fn = new Function(code); const prog = fn() as Program; setProgram(prog) } catch {}
+      try {
+        const fn = new Function(code)
+        const prog = fn() as Program
+        setProgram(prog)
+      } catch (error) {
+        console.error('Code generation failed:', error)
+        setProgram([])
+      }
     }
-    ws.addChangeListener(save); save()
-    return () => ws.dispose()
+      ws.addChangeListener(save); save()
+      setIsLoading(false)
+      return () => ws.dispose()
+    } catch (error) {
+      console.error('Blockly initialization failed:', error)
+      setIsLoading(false)
+      setError(error instanceof Error ? error.message : 'Failed to initialize the visual builder')
+      // Fallback: Show error message in the UI
+      if (divRef.current) {
+        divRef.current.innerHTML = `
+          <div class="flex items-center justify-center h-full text-center p-8">
+            <div class="bg-red-500/10 border border-red-500/20 rounded-lg p-6 max-w-md">
+              <h3 class="text-red-400 font-semibold mb-2">Blockly Initialization Failed</h3>
+              <p class="text-sm text-gray-300 mb-4">
+                The visual builder couldn't load. This might be due to missing dependencies or browser compatibility issues.
+              </p>
+              <button
+                onclick="window.location.reload()"
+                class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded text-sm"
+              >
+                Reload Page
+              </button>
+            </div>
+          </div>
+        `
+      }
+    }
   }, [])
 
   return (
     <main className="container py-6">
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-        <section className="card lg:col-span-2"><h2 className="mb-3 text-xl font-semibold">DBot‑style Builder</h2><div ref={divRef} style={{ minHeight: 520 }} /></section>
+        <section className="card lg:col-span-2">
+          <h2 className="mb-3 text-xl font-semibold">DBot‑style Builder</h2>
+          {error ? (
+            <div className="flex items-center justify-center h-full text-center p-8">
+              <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-6 max-w-md">
+                <h3 className="text-red-400 font-semibold mb-2">Builder Failed to Load</h3>
+                <p className="text-sm text-gray-300 mb-4">{error}</p>
+                <button
+                  onClick={() => window.location.reload()}
+                  className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded text-sm"
+                >
+                  Reload Page
+                </button>
+              </div>
+            </div>
+          ) : isLoading ? (
+            <div className="flex items-center justify-center h-full">
+              <div className="text-center">
+                <div className="animate-spin w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full mx-auto mb-4"></div>
+                <p className="text-gray-400">Loading Visual Builder...</p>
+              </div>
+            </div>
+          ) : (
+            <div ref={divRef} style={{ minHeight: 520 }} />
+          )}
+        </section>
         <section className="card space-y-3">
           <h3 className="text-lg font-semibold">Program Preview</h3>
           <pre className="h-48 overflow-auto rounded-xl bg-black/30 p-3 text-xs">{JSON.stringify(program, null, 2)}</pre>
@@ -195,12 +257,33 @@ export default function BuilderPage() {
 
 function RunButtons({ program }: { program: Program }) {
   const [running, setRunning] = useState(false)
+
+  const handleRun = () => {
+    if (program.length === 0) {
+      alert('Please build a strategy first by adding blocks to the workspace.')
+      return
+    }
+    try {
+      runProgram(program)
+      setRunning(true)
+    } catch (error) {
+      console.error('Failed to run program:', error)
+      alert('Failed to run the strategy. Please check your program configuration.')
+    }
+  }
+
   return (
     <div className="flex gap-2">
       {running ? (
         <button className="rounded-xl bg-rose-600 px-3 py-2 hover:bg-rose-700" onClick={() => { setRunning(false) }}>Stop</button>
       ) : (
-        <button className="rounded-xl bg-emerald-600 px-3 py-2 hover:bg-emerald-700" onClick={() => { runProgram(program); setRunning(true) }}>Run</button>
+        <button
+          className="rounded-xl bg-emerald-600 px-3 py-2 hover:bg-emerald-700 disabled:bg-gray-600"
+          onClick={handleRun}
+          disabled={program.length === 0}
+        >
+          Run
+        </button>
       )}
     </div>
   )
@@ -208,23 +291,72 @@ function RunButtons({ program }: { program: Program }) {
 
 function SaveLoad({ program }: { program: any }) {
   const [name, setName] = useState('my-bot')
-  const saveNamed = () => { localStorage.setItem('bot:'+name, JSON.stringify(program)); alert('Saved as ' + name) }
+
+  const saveNamed = () => {
+    try {
+      if (program.length === 0) {
+        alert('Please build a strategy first before saving.')
+        return
+      }
+      localStorage.setItem('bot:'+name, JSON.stringify(program))
+      alert('Saved as ' + name)
+    } catch (error) {
+      console.error('Save failed:', error)
+      alert('Failed to save the strategy. Please try again.')
+    }
+  }
+
   const loadNamed = () => {
-    const txt = localStorage.getItem('bot:'+name)
-    if (!txt) return alert('No saved bot with that name')
-    localStorage.setItem('dbot_style_workspace_xml', '')
-    alert('Loaded program JSON into slot; JSON→Blocks rehydrate can be added next.')
+    try {
+      const txt = localStorage.getItem('bot:'+name)
+      if (!txt) {
+        alert('No saved bot with that name')
+        return
+      }
+      localStorage.setItem('dbot_style_workspace_xml', '')
+      alert('Loaded program JSON into slot; JSON→Blocks rehydrate can be added next.')
+    } catch (error) {
+      console.error('Load failed:', error)
+      alert('Failed to load the strategy. Please try again.')
+    }
   }
   const exportJSON = () => {
-    const blob = new Blob([JSON.stringify(program, null, 2)], { type: 'application/json' })
-    const url = URL.createObjectURL(blob); const a = document.createElement('a')
-    a.href = url; a.download = name + '.json'; a.click(); URL.revokeObjectURL(url)
+    try {
+      if (program.length === 0) {
+        alert('Please build a strategy first before exporting.')
+        return
+      }
+      const blob = new Blob([JSON.stringify(program, null, 2)], { type: 'application/json' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = name + '.json'
+      a.click()
+      URL.revokeObjectURL(url)
+    } catch (error) {
+      console.error('Export failed:', error)
+      alert('Failed to export the strategy. Please try again.')
+    }
   }
+
   const importJSON = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const f = e.target.files?.[0]; if (!f) return
-    const reader = new FileReader(); reader.onload = () => {
-      try { const obj = JSON.parse(String(reader.result)); localStorage.setItem('bot:'+name, JSON.stringify(obj)); alert('Imported into '+name) } catch { alert('Invalid JSON') }
-    }; reader.readAsText(f)
+    const f = e.target.files?.[0]
+    if (!f) return
+
+    const reader = new FileReader()
+    reader.onload = () => {
+      try {
+        const obj = JSON.parse(String(reader.result))
+        localStorage.setItem('bot:'+name, JSON.stringify(obj))
+        alert('Imported into '+name)
+        // Reload the page to refresh the workspace
+        window.location.reload()
+      } catch (error) {
+        console.error('Import failed:', error)
+        alert('Invalid JSON file. Please check the file format.')
+      }
+    }
+    reader.readAsText(f)
   }
   return (
     <div className="space-y-2">
